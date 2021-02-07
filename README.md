@@ -1,2 +1,3 @@
-# example_addon
-A base to start your own addon from
+# SelectRenderer
+
+Ingame UI based render selection for GW2 
