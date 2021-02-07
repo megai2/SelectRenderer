@@ -1,4 +1,4 @@
-LIBRARY gw2addon_gw2addon.dll
+LIBRARY gw2addon_SelectRender.dll
 EXPORTS
 	gw2addon_get_description
 	gw2addon_load

@@ -7,8 +7,8 @@ gw2al_addon_dsc gAddonDeps[] = {
 };
 
 gw2al_addon_dsc gAddonDsc = {
-	L"example_addon",//CHANGE_ME
-	L"example addon to start off",//CHANGE_ME
+	L"SelectRender",
+	L"Ingame UI based render selection for GW2",
 	1,
 	0,
 	1,
