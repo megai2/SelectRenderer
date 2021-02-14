@@ -14,6 +14,12 @@ wchar_t* GetD3D9CustomLib()
 	return ret;
 }
 
+void ExternalShowMenu()
+{
+	gAddon().main.stopAutoHide();
+	gAddon().gui->toggleUI(true);
+}
+
 void Main::init()
 {
 	FILE* f = nullptr;
@@ -31,9 +37,11 @@ void Main::init()
 
 	auto nha = gAddon().api->hash_name((wchar_t*)L"D3D_wrapper_custom_d3d9_lib_query");
 	if (gAddon().api->register_function(&GetD3D9CustomLib, nha) != GW2AL_OK)
-	{
 		gAddon().api->log_text(LL_ERR, (wchar_t*)L"SelectRender", (wchar_t*)L"someone already defined custom d3d lib query");
-	}
+
+	nha = gAddon().api->hash_name((wchar_t*)L"SelectRender_ExternalShowMenu");
+	if (gAddon().api->register_function(&ExternalShowMenu, nha) != GW2AL_OK)
+		gAddon().api->log_text(LL_ERR, (wchar_t*)L"SelectRender", (wchar_t*)L"external show menu proc is not registered");
 
 	GetSystemDirectory(sysD3D9, 4096);
 	lstrcatW(sysD3D9, L"\\d3d9.dll");
