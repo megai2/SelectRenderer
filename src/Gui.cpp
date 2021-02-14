@@ -87,6 +87,8 @@ void Gui::draw()
 		ImGui::NewLine();
 		ImGui::Text("Will auto hide in %u seconds", (*hideTimeout)/1000);
 	}
+	if (ImGui::Button("Hide"))
+		toggleUI(true);
 	ImGui::End();
 }
 
