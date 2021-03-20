@@ -51,16 +51,24 @@ void Gui::draw()
 		break;
 	}
 
+	if (!gAddon().main.isExtraDllsLoaded())
+	{
+		ImGui::Text("Some extra dlls are not loaded!");
+		ImGui::Text("Check integrity of selected renderer installation");
+	}
+
 	if (showList)
 	{
-		ImGui::RadioButton("D3D9", &renderIndex, (int)RenderType::D3D9);
-		ImGui::RadioButton("D3D9 + ReShade", &renderIndex, (int)RenderType::D3D9_X_RESHADE);
-		ImGui::RadioButton("D3D9 + GW2Hook", &renderIndex, (int)RenderType::D3D9_X_GW2HOOK);
-		ImGui::RadioButton("d912pxy", &renderIndex, (int)RenderType::D912PXY);
-		ImGui::RadioButton("d912pxy + ReShade", &renderIndex, (int)RenderType::D912PXY_X_RESHADE);
-		ImGui::RadioButton("d912pxy + Gw2Enhanced", &renderIndex, (int)RenderType::D912PXY_X_GW2ENHANCED);
-		ImGui::RadioButton("DXVK", &renderIndex, (int)RenderType::DXVK);
-		ImGui::RadioButton("DXVK + ReShade", &renderIndex, (int)RenderType::DXVK_X_RESHADE);
+		ImGui::NewLine();
+		drawSeletionOption("D3D9", &renderIndex, RenderType::D3D9);
+		drawSeletionOption("D3D9 + ReShade", &renderIndex, RenderType::D3D9_X_RESHADE);
+		drawSeletionOption("D3D9 + GW2Hook", &renderIndex, RenderType::D3D9_X_GW2HOOK);
+		drawSeletionOption("d912pxy", &renderIndex, RenderType::D912PXY);
+		drawSeletionOption("d912pxy + ReShade", &renderIndex, RenderType::D912PXY_X_RESHADE);
+		drawSeletionOption("d912pxy + Gw2Enhanced", &renderIndex, RenderType::D912PXY_X_GW2ENHANCED);
+		drawSeletionOption("DXVK", &renderIndex, RenderType::DXVK);
+		drawSeletionOption("DXVK + ReShade", &renderIndex, RenderType::DXVK_X_RESHADE);
+		ImGui::NewLine();
 		if (ImGui::Button("Apply"))
 		{
 			showRestartNotify = gAddon().main.setRenderer((RenderType)renderIndex);
@@ -95,4 +103,12 @@ void Gui::draw()
 void Gui::deinit()
 {
 	//CHANGE ME
+}
+
+void Gui::drawSeletionOption(const char* txt, int* v, RenderType v_button)
+{
+	if (gAddon().main.checkAvailability(v_button))
+		ImGui::RadioButton(txt, v, (int)v_button);
+	else
+		ImGui::Text("   %s (N/A)", txt);
 }

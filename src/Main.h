@@ -19,9 +19,13 @@ class Main
 	int hideTimeout = 15000;
 	int lastUpd = 0;
 	bool needAutoHide = true;
+	bool extraDllsLoaded = true;
 	RenderType activeRenderer = RenderType::D3D9;
 
 	wchar_t sysD3D9[4096];
+
+	bool renderOptionAvailability[(int)RenderType::COUNT] = { 0 };
+	bool renderAvailabilityCached = false;
 
 public:
 	int* getHideTimeoutPtr() { return &hideTimeout; }
@@ -32,6 +36,12 @@ public:
 	RenderType getActiveRenderer() { return activeRenderer;  }
 	void deinit() { }
 
+	bool isExtraDllsLoaded() { return extraDllsLoaded; }
+
 	wchar_t* loadRender();
+	void checkAvailabilityUncached();
+	bool checkAvailability(RenderType index);
+
+	bool fileExists(const wchar_t* fn);
 };
 

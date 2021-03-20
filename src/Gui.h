@@ -17,5 +17,6 @@ public:
 	void init();
 	void draw();
 	void deinit();
+	void drawSeletionOption(const char* txt, int* v, RenderType v_button);
 };
 

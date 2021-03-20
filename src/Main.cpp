@@ -5,7 +5,18 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-const char* currentRenderFn = "./addons/SelectRender/active_render.bin";
+static const char* currentRenderFn = "./addons/SelectRender/active_render.bin";
+
+static const wchar_t* render_gw2hook_d3d9_dll = L"./addons/gw2hook/d3d9.dll";
+static const wchar_t* render_d912pxy_d3d9_dll = L"./addons/d912pxy/dll/release/d3d9.dll";
+static const wchar_t* render_dxvk_d3d9_dll = L"./addons/dxvk/d3d9.dll";
+
+static const wchar_t* render_reshade_d3d9_dll = L"./addons/reshade/d3d9.dll";
+static const wchar_t* render_reshade_dxgi_dll = L"./addons/reshade/dxgi.dll";
+static const wchar_t* render_reshade_d3d12_dll = L"./addons/reshade/d3d12.dll";
+
+static const wchar_t* render_gw2enhanced_dxgi_dll = L"./addons/gw2enhanced/dxgi.dll";
+static const wchar_t* render_gw2enhanced_d3d12_dll = L"./addons/gw2enhanced/d3d12.dll";
 
 wchar_t* GetD3D9CustomLib()
 {
@@ -91,28 +102,64 @@ wchar_t* Main::loadRender()
 	switch (activeRenderer)
 	{
 	case RenderType::D3D9:
+	default:
 		return sysD3D9;
 	case RenderType::D3D9_X_RESHADE:
-		return (wchar_t*)L"./addons/reshade/d3d9.dll";
+		return (wchar_t*)render_reshade_d3d9_dll;
 	case RenderType::D3D9_X_GW2HOOK:
-		return (wchar_t*)L"./addons/gw2hook/d3d9.dll";
+		return (wchar_t*)render_gw2hook_d3d9_dll;
 	case RenderType::D912PXY:
-		return (wchar_t*)L"./addons/d912pxy/dll/release/d3d9.dll";
+		return (wchar_t*)render_d912pxy_d3d9_dll;
 	case RenderType::D912PXY_X_RESHADE:
-		LoadLibraryW(L"./addons/reshade/dxgi.dll");
-		LoadLibraryW(L"./addons/reshade/d3d12.dll");
-		return (wchar_t*)L"./addons/d912pxy/dll/release/d3d9.dll";
+		extraDllsLoaded &= 
+			(LoadLibraryW(render_reshade_dxgi_dll) != NULL) ||
+			(LoadLibraryW(render_reshade_d3d12_dll) != NULL);
+		return (wchar_t*)render_d912pxy_d3d9_dll;
 	case RenderType::D912PXY_X_GW2ENHANCED:
-		LoadLibraryW(L"./addons/gw2enhanced/dxgi.dll");
-		LoadLibraryW(L"./addons/gw2enhanced/d3d12.dll");
-		return (wchar_t*)L"./addons/d912pxy/dll/release/d3d9.dll";
+		extraDllsLoaded &=
+			(LoadLibraryW(render_gw2enhanced_dxgi_dll) != NULL) ||
+			(LoadLibraryW(render_gw2enhanced_d3d12_dll) != NULL);;
+		return (wchar_t*)render_d912pxy_d3d9_dll;
 	case RenderType::DXVK:
-		return (wchar_t*)L"./addons/dxvk/d3d9.dll";
+		return (wchar_t*)render_dxvk_d3d9_dll;
 	case RenderType::DXVK_X_RESHADE:
 		//TODO: see how to load reshade with dxvk from code (or maybe it is not needed at all)
-		return (wchar_t*)L"./addons/dxvk/d3d9.dll";
-	default:
-
-		return (wchar_t*)L"d3d9.dll";
+		return (wchar_t*)render_dxvk_d3d9_dll;
 	}
+}
+
+void Main::checkAvailabilityUncached()
+{
+	renderOptionAvailability[(int)RenderType::D3D9] = true;
+	renderOptionAvailability[(int)RenderType::D3D9_X_RESHADE] = fileExists(render_reshade_d3d9_dll);
+	renderOptionAvailability[(int)RenderType::D3D9_X_GW2HOOK] = fileExists(render_gw2hook_d3d9_dll);
+	renderOptionAvailability[(int)RenderType::D912PXY] = fileExists(render_d912pxy_d3d9_dll);
+	renderOptionAvailability[(int)RenderType::D912PXY_X_RESHADE] = fileExists(render_d912pxy_d3d9_dll)
+		&& (fileExists(render_reshade_dxgi_dll) || fileExists(render_reshade_d3d12_dll));
+	renderOptionAvailability[(int)RenderType::D912PXY_X_GW2ENHANCED] = fileExists(render_d912pxy_d3d9_dll)
+		&& (fileExists(render_gw2enhanced_dxgi_dll) || fileExists(render_gw2enhanced_d3d12_dll));
+	renderOptionAvailability[(int)RenderType::DXVK] = fileExists(render_dxvk_d3d9_dll);
+	renderOptionAvailability[(int)RenderType::DXVK_X_RESHADE] = fileExists(render_dxvk_d3d9_dll);
+}
+
+bool Main::checkAvailability(RenderType index)
+{
+	if (!renderAvailabilityCached)
+		checkAvailabilityUncached();
+
+	if (index >= RenderType::COUNT)
+		return false;
+
+	return renderOptionAvailability[(int)index];
+}
+
+bool Main::fileExists(const wchar_t* fn)
+{
+	FILE* f = nullptr;
+	_wfopen_s(&f, fn, L"rb");
+	if (!f)
+		return false;
+	
+	fclose(f);
+	return true;
 }
