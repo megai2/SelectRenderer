@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "build_version.h"
 
 gw2al_addon_dsc gAddonDeps[] = {
 	{ L"loader_core", L"whatever", 0, 1, 1, 0 },
@@ -10,8 +11,8 @@ gw2al_addon_dsc gAddonDsc = {
 	L"SelectRender",
 	L"Ingame UI based render selection for GW2",
 	1,
-	0,
 	1,
+	BUILD_VERSION_REV,
 	gAddonDeps
 };
 

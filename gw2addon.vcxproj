@@ -98,6 +98,7 @@
     <ClInclude Include="src/stdafx.h" />
     <ClInclude Include="src/targetver.h" />
     <ClInclude Include="src\addon.h" />
+    <ClInclude Include="src\build_version.h" />
     <ClInclude Include="src\Gui.h" />
     <ClInclude Include="src\Main.h" />
   </ItemGroup>
