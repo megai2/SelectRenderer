@@ -33,4 +33,5 @@
 
 .vs/*
 bin/*
+x64/*
 *.vcxproj.user

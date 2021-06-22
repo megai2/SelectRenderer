@@ -10,6 +10,7 @@ static const char* currentRenderFn = "./addons/SelectRender/active_render.bin";
 static const wchar_t* render_gw2hook_d3d9_dll = L"./addons/gw2hook/d3d9.dll";
 static const wchar_t* render_d912pxy_d3d9_dll = L"./addons/d912pxy/dll/release/d3d9.dll";
 static const wchar_t* render_dxvk_d3d9_dll = L"./addons/dxvk/d3d9.dll";
+static const wchar_t* render_dxvk_async_d3d9_dll = L"./addons/dxvk-async/d3d9.dll";
 
 static const wchar_t* render_reshade_d3d9_dll = L"./addons/reshade/d3d9.dll";
 static const wchar_t* render_reshade_dxgi_dll = L"./addons/reshade/dxgi.dll";
@@ -125,6 +126,12 @@ wchar_t* Main::loadRender()
 	case RenderType::DXVK_X_RESHADE:
 		//TODO: see how to load reshade with dxvk from code (or maybe it is not needed at all)
 		return (wchar_t*)render_dxvk_d3d9_dll;
+	case RenderType::DXVK_ASYNC:
+		_putenv_s("DXVK_ASYNC", "1");
+		return (wchar_t*)render_dxvk_async_d3d9_dll;
+	case RenderType::DXVK_ASYNC_X_RESHADE:
+		_putenv_s("DXVK_ASYNC", "1");
+		return (wchar_t*)render_dxvk_async_d3d9_dll;
 	}
 }
 
@@ -140,6 +147,8 @@ void Main::checkAvailabilityUncached()
 		&& (fileExists(render_gw2enhanced_dxgi_dll) || fileExists(render_gw2enhanced_d3d12_dll));
 	renderOptionAvailability[(int)RenderType::DXVK] = fileExists(render_dxvk_d3d9_dll);
 	renderOptionAvailability[(int)RenderType::DXVK_X_RESHADE] = fileExists(render_dxvk_d3d9_dll);
+	renderOptionAvailability[(int)RenderType::DXVK_ASYNC] = fileExists(render_dxvk_async_d3d9_dll);
+	renderOptionAvailability[(int)RenderType::DXVK_ASYNC_X_RESHADE] = fileExists(render_dxvk_async_d3d9_dll);
 }
 
 bool Main::checkAvailability(RenderType index)
