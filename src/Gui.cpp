@@ -46,6 +46,12 @@ void Gui::draw()
 	case (int)RenderType::DXVK_X_RESHADE:
 		ImGui::Text("vulkan renderer via DXVK with ReShade");
 		break;
+	case (int)RenderType::DXVK_ASYNC:
+		ImGui::Text("vulkan renderer via DXVK (async)");
+		break;
+	case (int)RenderType::DXVK_ASYNC_X_RESHADE:
+		ImGui::Text("vulkan renderer via DXVK (async) with ReShade");
+		break;
 	default:
 		ImGui::Text("current render selection is broken...");
 		break;
@@ -68,6 +74,8 @@ void Gui::draw()
 		drawSeletionOption("d912pxy + Gw2Enhanced", &renderIndex, RenderType::D912PXY_X_GW2ENHANCED);
 		drawSeletionOption("DXVK", &renderIndex, RenderType::DXVK);
 		drawSeletionOption("DXVK + ReShade", &renderIndex, RenderType::DXVK_X_RESHADE);
+		drawSeletionOption("DXVK (async)", &renderIndex, RenderType::DXVK_ASYNC);
+		drawSeletionOption("DXVK (async) + ReShade", &renderIndex, RenderType::DXVK_ASYNC_X_RESHADE);
 		ImGui::NewLine();
 		if (ImGui::Button("Apply"))
 		{

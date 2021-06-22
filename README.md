@@ -11,9 +11,11 @@ Release package does not contain DXVK, d912pxy or reshade.
 
 To be able to select them, install to said paths
 
-DXVK: \<gw2 dir\>/addons/dxvk/d3d9.dll
-  
-d912pxy: \<gw2 dir\>/addons/d912pxy (via addon manager)
+[DXVK](https://github.com/doitsujin/dxvk/): \<gw2 dir\>/addons/dxvk/d3d9.dll
+
+[DXVK-async](https://github.com/Sporif/dxvk-async): \<gw2 dir\>/addons/dxvk-async/d3d9.dll
+
+[d912pxy](https://github.com/megai2/d912pxy): \<gw2 dir\>/addons/d912pxy (via addon manager)
 
 reshade dx9: \<gw2 dir\>/addons/reshade/d3d9.dll
   
