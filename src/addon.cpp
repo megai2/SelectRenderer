@@ -2,7 +2,7 @@
 #include "build_version.h"
 
 gw2al_addon_dsc gAddonDeps[] = {
-	{ L"loader_core", L"whatever", 0, 1, 1, 0 },
+	GW2AL_CORE_DEP_ENTRY,
 	LIB_IMGUI_DEP_ENTRY,
 	{ 0,0,0,0,0,0 }
 };

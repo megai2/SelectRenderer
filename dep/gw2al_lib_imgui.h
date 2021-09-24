@@ -3,7 +3,7 @@
 #include <gw2al_api.h>
 #include <imgui.h>
 
-#define LIB_IMGUI_DEP_ENTRY { L"lib_imgui", L" ", 1, 0, 1, 0 }
+#define LIB_IMGUI_DEP_ENTRY { L"lib_imgui", L" ", 2, 0, 1, 0 }
 
 template<typename UserHandler>
 class lib_imgui
