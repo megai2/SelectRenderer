@@ -3,6 +3,11 @@
 void Gui::init()
 {
 	hideTimeout = gAddon().main.getHideTimeoutPtr();
+	updateActualActiveRender();
+}
+
+void Gui::updateActualActiveRender()
+{
 	activeRenderIndex = (int)gAddon().main.getActiveRenderer();
 	renderIndex = activeRenderIndex;
 }
@@ -52,6 +57,24 @@ void Gui::draw()
 	case (int)RenderType::DXVK_ASYNC_X_RESHADE:
 		ImGui::Text("vulkan renderer via DXVK (async) with ReShade");
 		break;
+	case (int)RenderType::DXVK11:
+		ImGui::Text("vulkan renderer via DXVK D3D11");
+		break;
+	case (int)RenderType::DXVK11_X_RESHADE:
+		ImGui::Text("vulkan renderer via DXVK D3D11 with ReShade");
+		break;
+	case (int)RenderType::DXVK11_ASYNC:
+		ImGui::Text("vulkan renderer via DXVK D3D11 (async) with ReShade");
+		break;
+	case (int)RenderType::DXVK11_ASYNC_X_RESHADE:
+		ImGui::Text("vulkan renderer via DXVK D3D11 (async) with ReShade");
+		break;
+	case (int)RenderType::D3D11:
+		ImGui::Text("stock direct3d 11 renderer");
+		break;
+	case (int)RenderType::D3D11_X_RESHADE:
+		ImGui::Text("stock direct3d 11 renderer with ReShade");
+		break;
 	default:
 		ImGui::Text("current render selection is broken...");
 		break;
@@ -76,6 +99,12 @@ void Gui::draw()
 		drawSeletionOption("DXVK + ReShade", &renderIndex, RenderType::DXVK_X_RESHADE);
 		drawSeletionOption("DXVK (async)", &renderIndex, RenderType::DXVK_ASYNC);
 		drawSeletionOption("DXVK (async) + ReShade", &renderIndex, RenderType::DXVK_ASYNC_X_RESHADE);
+		drawSeletionOption("DXVK (for D3D11)", &renderIndex, RenderType::DXVK11);
+		drawSeletionOption("DXVK + ReShade (for D3D11)", &renderIndex, RenderType::DXVK11_X_RESHADE);
+		drawSeletionOption("DXVK (async, for D3D11)", &renderIndex, RenderType::DXVK11_ASYNC);
+		drawSeletionOption("DXVK + ReShade (async, for D3D11)", &renderIndex, RenderType::DXVK11_ASYNC_X_RESHADE);
+		drawSeletionOption("D3D11", &renderIndex, RenderType::D3D11);
+		drawSeletionOption("D3D11 + ReShade", &renderIndex, RenderType::D3D11_X_RESHADE);
 		ImGui::NewLine();
 		if (ImGui::Button("Apply"))
 		{

@@ -15,6 +15,7 @@ public:
 	void toggleUI(bool v) { showUI = v; }
 
 	void init();
+	void updateActualActiveRender();
 	void draw();
 	void deinit();
 	void drawSeletionOption(const char* txt, int* v, RenderType v_button);

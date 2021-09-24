@@ -13,6 +13,12 @@ enum class RenderType
 	DXVK_X_RESHADE,
 	DXVK_ASYNC,
 	DXVK_ASYNC_X_RESHADE,
+	DXVK11,
+	DXVK11_X_RESHADE,
+	DXVK11_ASYNC,
+	DXVK11_ASYNC_X_RESHADE,
+	D3D11,
+	D3D11_X_RESHADE,
 	COUNT
 };
 
@@ -22,9 +28,12 @@ class Main
 	int lastUpd = 0;
 	bool needAutoHide = true;
 	bool extraDllsLoaded = true;
+	bool usingDX11base = false;
 	RenderType activeRenderer = RenderType::D3D9;
 
 	wchar_t sysD3D9[4096];
+	wchar_t sysD3D11[4096];
+	wchar_t sysDXGI[4096];
 
 	bool renderOptionAvailability[(int)RenderType::COUNT] = { 0 };
 	bool renderAvailabilityCached = false;
@@ -40,7 +49,9 @@ public:
 
 	bool isExtraDllsLoaded() { return extraDllsLoaded; }
 
-	wchar_t* loadRender();
+	wchar_t* selectRenderD3D9();
+	const wchar_t* selectRenderD3D11();
+	const wchar_t* selectRenderDXGI();
 	void checkAvailabilityUncached();
 	bool checkAvailability(RenderType index);
 
