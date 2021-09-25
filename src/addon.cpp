@@ -11,7 +11,7 @@ gw2al_addon_dsc gAddonDsc = {
 	L"SelectRender",
 	L"Ingame UI based render selection for GW2",
 	1,
-	2,
+	3,
 	BUILD_VERSION_REV,
 	gAddonDeps
 };
