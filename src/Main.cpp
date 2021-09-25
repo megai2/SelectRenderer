@@ -173,9 +173,11 @@ const wchar_t* Main::selectRenderDXGI()
 		//TODO: load reshade somehow
 		return render_dxvk_dxgi_dll;
 	case RenderType::DXVK11_ASYNC:
+		_putenv_s("DXVK_ASYNC", "1");
 		return render_dxvk_async_dxgi_dll;
 	case RenderType::DXVK11_ASYNC_X_RESHADE:
 		//TODO: load reshade somehow
+		_putenv_s("DXVK_ASYNC", "1");
 		return render_dxvk_async_dxgi_dll;
 	case RenderType::D3D11_X_RESHADE:
 		return render_reshade_dxgi_dll;
