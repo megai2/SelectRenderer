@@ -152,7 +152,7 @@ const wchar_t* Main::selectRenderD3D11()
 		//TODO: load reshade somehow
 		return render_dxvk_async_d3d11_dll; 
 	case RenderType::D3D11_X_RESHADE:
-		return render_reshade_d3d11_dll;
+		return sysD3D11;
 	}
 }
 
@@ -250,7 +250,7 @@ void Main::checkAvailabilityUncached()
 		renderOptionAvailability[(int)RenderType::DXVK11_ASYNC] = fileExists(render_dxvk_async_d3d11_dll) && fileExists(render_dxvk_async_dxgi_dll);
 		renderOptionAvailability[(int)RenderType::DXVK11_ASYNC_X_RESHADE] = fileExists(render_dxvk_d3d11_dll) && fileExists(render_dxvk_dxgi_dll) && fileExists(render_reshade_dxgi_dll);
 		renderOptionAvailability[(int)RenderType::D3D11] = true;
-		renderOptionAvailability[(int)RenderType::D3D11_X_RESHADE] = fileExists(render_reshade_d3d11_dll) && fileExists(render_reshade_dxgi_dll);
+		renderOptionAvailability[(int)RenderType::D3D11_X_RESHADE] = fileExists(render_reshade_dxgi_dll);
 	}
 }
 
