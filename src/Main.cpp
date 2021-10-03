@@ -6,6 +6,7 @@
 #include <stdio.h>
 
 static const char* currentRenderFn = "./addons/SelectRender/active_render.bin";
+static const char* currentRenderDX11Fn = "./addons/SelectRender/active_render_dx11.bin";
 
 static const wchar_t* render_gw2hook_d3d9_dll = L"./addons/gw2hook/d3d9.dll";
 static const wchar_t* render_d912pxy_d3d9_dll = L"./addons/d912pxy/dll/release/d3d9.dll";
@@ -68,6 +69,18 @@ void Main::init()
 		fclose(f);
 	}
 
+	fopen_s(&f, currentRenderDX11Fn, "r");
+	if (f)
+	{
+		fread(&activeRendererDX11, sizeof(activeRendererDX11), 1, f);
+		if ((int)activeRendererDX11 >= (int)RenderType::COUNT)
+		{
+			gAddon().api->log_text(LL_ERR, (wchar_t*)L"SelectRender", (wchar_t*)L"Garbadge in active_render_dx11.bin file, using stock d3d11");
+			activeRendererDX11 = RenderType::D3D11;
+		}
+		fclose(f);
+	}
+
 	auto nha = gAddon().api->hash_name(L"D3D_wrapper_custom_d3d9_lib_query");
 	if (gAddon().api->register_function(&GetD3D9CustomLib, nha) != GW2AL_OK)
 		gAddon().api->log_text(LL_ERR, (wchar_t*)L"SelectRender", (wchar_t*)L"someone already defined custom d3d9 lib query");
@@ -110,11 +123,11 @@ void Main::update()
 	}
 }
 
-bool Main::setRenderer(RenderType v)
+bool Main::setRenderer(RenderType v, bool dx11_mode)
 {
 	bool ret = false;
 	FILE* f = nullptr;
-	fopen_s(&f, currentRenderFn, "w");
+	fopen_s(&f, dx11_mode ? currentRenderDX11Fn : currentRenderFn, "w");
 
 	if (f)
 	{
@@ -126,19 +139,19 @@ bool Main::setRenderer(RenderType v)
 		fclose(f);
 	} else 
 		gAddon().api->log_text(LL_ERR, (wchar_t*)L"SelectRender", (wchar_t*)L"Can't create active render file, stock will still be used on restart");
+
 	
 	return ret;
 }
 
 const wchar_t* Main::selectRenderD3D11()
 {
-	usingDX11base = true;
 	gAddon().api->log_text(LL_INFO, (wchar_t*)L"SelectRender", (wchar_t*)L"Loading d3d11");
-	switch (activeRenderer)
+	switch (activeRendererDX11)
 	{
 	case RenderType::D3D11:
 	default:
-		activeRenderer = RenderType::D3D11;
+		activeRendererDX11 = RenderType::D3D11;
 		gAddon().gui->updateActualActiveRender();
 		return sysD3D11;
 	case RenderType::DXVK11:
@@ -158,13 +171,12 @@ const wchar_t* Main::selectRenderD3D11()
 
 const wchar_t* Main::selectRenderDXGI()
 {
-	usingDX11base = true;
 	gAddon().api->log_text(LL_INFO, (wchar_t*)L"SelectRender", (wchar_t*)L"Loading dxgi");
-	switch (activeRenderer)
+	switch (activeRendererDX11)
 	{
 	case RenderType::D3D11:
 	default:
-		activeRenderer = RenderType::D3D11;
+		activeRendererDX11 = RenderType::D3D11;
 		gAddon().gui->updateActualActiveRender();
 		return sysDXGI;
 	case RenderType::DXVK11:
@@ -228,30 +240,24 @@ wchar_t* Main::selectRenderD3D9()
 void Main::checkAvailabilityUncached()
 {
 	//FIXME: optimize, can check files once and compose on result after
-
-	if (!usingDX11base)
-	{
-		renderOptionAvailability[(int)RenderType::D3D9] = true;
-		renderOptionAvailability[(int)RenderType::D3D9_X_RESHADE] = fileExists(render_reshade_d3d9_dll);
-		renderOptionAvailability[(int)RenderType::D3D9_X_GW2HOOK] = fileExists(render_gw2hook_d3d9_dll);
-		renderOptionAvailability[(int)RenderType::D912PXY] = fileExists(render_d912pxy_d3d9_dll);
-		renderOptionAvailability[(int)RenderType::D912PXY_X_RESHADE] = fileExists(render_d912pxy_d3d9_dll)
-			&& (fileExists(render_reshade_dxgi_dll) || fileExists(render_reshade_d3d12_dll));
-		renderOptionAvailability[(int)RenderType::D912PXY_X_GW2ENHANCED] = fileExists(render_d912pxy_d3d9_dll)
-			&& (fileExists(render_gw2enhanced_dxgi_dll) || fileExists(render_gw2enhanced_d3d12_dll));
-		renderOptionAvailability[(int)RenderType::DXVK] = fileExists(render_dxvk_d3d9_dll);
-		renderOptionAvailability[(int)RenderType::DXVK_X_RESHADE] = fileExists(render_dxvk_d3d9_dll);
-		renderOptionAvailability[(int)RenderType::DXVK_ASYNC] = fileExists(render_dxvk_async_d3d9_dll);
-		renderOptionAvailability[(int)RenderType::DXVK_ASYNC_X_RESHADE] = fileExists(render_dxvk_async_d3d9_dll);
-	}
-	else {
-		renderOptionAvailability[(int)RenderType::DXVK11] = fileExists(render_dxvk_d3d11_dll) && fileExists(render_dxvk_dxgi_dll);
-		renderOptionAvailability[(int)RenderType::DXVK11_X_RESHADE] = fileExists(render_dxvk_d3d11_dll) && fileExists(render_dxvk_dxgi_dll) && fileExists(render_reshade_dxgi_dll);
-		renderOptionAvailability[(int)RenderType::DXVK11_ASYNC] = fileExists(render_dxvk_async_d3d11_dll) && fileExists(render_dxvk_async_dxgi_dll);
-		renderOptionAvailability[(int)RenderType::DXVK11_ASYNC_X_RESHADE] = fileExists(render_dxvk_d3d11_dll) && fileExists(render_dxvk_dxgi_dll) && fileExists(render_reshade_dxgi_dll);
-		renderOptionAvailability[(int)RenderType::D3D11] = true;
-		renderOptionAvailability[(int)RenderType::D3D11_X_RESHADE] = fileExists(render_reshade_dxgi_dll);
-	}
+	renderOptionAvailability[(int)RenderType::D3D9] = true;
+	renderOptionAvailability[(int)RenderType::D3D9_X_RESHADE] = fileExists(render_reshade_d3d9_dll);
+	renderOptionAvailability[(int)RenderType::D3D9_X_GW2HOOK] = fileExists(render_gw2hook_d3d9_dll);
+	renderOptionAvailability[(int)RenderType::D912PXY] = fileExists(render_d912pxy_d3d9_dll);
+	renderOptionAvailability[(int)RenderType::D912PXY_X_RESHADE] = fileExists(render_d912pxy_d3d9_dll)
+		&& (fileExists(render_reshade_dxgi_dll) || fileExists(render_reshade_d3d12_dll));
+	renderOptionAvailability[(int)RenderType::D912PXY_X_GW2ENHANCED] = fileExists(render_d912pxy_d3d9_dll)
+		&& (fileExists(render_gw2enhanced_dxgi_dll) || fileExists(render_gw2enhanced_d3d12_dll));
+	renderOptionAvailability[(int)RenderType::DXVK] = fileExists(render_dxvk_d3d9_dll);
+	renderOptionAvailability[(int)RenderType::DXVK_X_RESHADE] = fileExists(render_dxvk_d3d9_dll);
+	renderOptionAvailability[(int)RenderType::DXVK_ASYNC] = fileExists(render_dxvk_async_d3d9_dll);
+	renderOptionAvailability[(int)RenderType::DXVK_ASYNC_X_RESHADE] = fileExists(render_dxvk_async_d3d9_dll);
+	renderOptionAvailability[(int)RenderType::DXVK11] = fileExists(render_dxvk_d3d11_dll) && fileExists(render_dxvk_dxgi_dll);
+	renderOptionAvailability[(int)RenderType::DXVK11_X_RESHADE] = fileExists(render_dxvk_d3d11_dll) && fileExists(render_dxvk_dxgi_dll) && fileExists(render_reshade_dxgi_dll);
+	renderOptionAvailability[(int)RenderType::DXVK11_ASYNC] = fileExists(render_dxvk_async_d3d11_dll) && fileExists(render_dxvk_async_dxgi_dll);
+	renderOptionAvailability[(int)RenderType::DXVK11_ASYNC_X_RESHADE] = fileExists(render_dxvk_d3d11_dll) && fileExists(render_dxvk_dxgi_dll) && fileExists(render_reshade_dxgi_dll);
+	renderOptionAvailability[(int)RenderType::D3D11] = true;
+	renderOptionAvailability[(int)RenderType::D3D11_X_RESHADE] = fileExists(render_reshade_dxgi_dll);
 }
 
 bool Main::checkAvailability(RenderType index)

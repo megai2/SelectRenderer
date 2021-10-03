@@ -1,30 +1,10 @@
 #include "stdafx.h"
 
-void Gui::init()
+void Gui::drawActiveSelection()
 {
-	hideTimeout = gAddon().main.getHideTimeoutPtr();
-	updateActualActiveRender();
-}
-
-void Gui::updateActualActiveRender()
-{
-	activeRenderIndex = (int)gAddon().main.getActiveRenderer();
-	renderIndex = activeRenderIndex;
-}
-
-void Gui::draw()
-{
-	if (!showUI)
-		return;
-
-	//should be separated from gui draw, but who cares
-	gAddon().main.update();
-
-	ImGui::Begin("SelectRender");
-
-	ImGui::Text("Current:");
+	ImGui::Text("Current  DX9:");
 	ImGui::SameLine();
-
+	
 	switch (activeRenderIndex)
 	{
 	case (int)RenderType::D3D9:
@@ -57,6 +37,16 @@ void Gui::draw()
 	case (int)RenderType::DXVK_ASYNC_X_RESHADE:
 		ImGui::Text("vulkan renderer via DXVK (async) with ReShade");
 		break;
+	default:
+		ImGui::Text("current render selection is broken...");
+		break;
+	}
+
+	ImGui::Text("Current DX11:");
+	ImGui::SameLine();
+
+	switch (activeRenderIndexDX11)
+	{
 	case (int)RenderType::DXVK11:
 		ImGui::Text("vulkan renderer via DXVK D3D11");
 		break;
@@ -79,6 +69,34 @@ void Gui::draw()
 		ImGui::Text("current render selection is broken...");
 		break;
 	}
+}
+
+void Gui::init()
+{
+	hideTimeout = gAddon().main.getHideTimeoutPtr();
+	updateActualActiveRender();
+}
+
+void Gui::updateActualActiveRender()
+{
+	activeRenderIndex = (int)gAddon().main.getActiveRenderer();
+	activeRenderIndexDX11 = (int)gAddon().main.getActiveDX11Renderer();
+	renderIndex = activeRenderIndex;
+	renderIndexDX11 = activeRenderIndexDX11;
+}
+
+void Gui::draw()
+{
+	if (!showUI)
+		return;
+
+	//should be separated from gui draw, but who cares
+	gAddon().main.update();
+
+	ImGui::Begin("SelectRender");
+
+	if (!showList)
+		drawActiveSelection();
 
 	if (!gAddon().main.isExtraDllsLoaded())
 	{
@@ -88,10 +106,14 @@ void Gui::draw()
 
 	if (showList)
 	{
+		ImGui::Text("Select render that you want to use from list below");
+		ImGui::Text("DX9 will be used when DX11 is disabled in game options and vice versa");
+
 		ImGui::NewLine();
-		drawSeletionOption("D3D9", &renderIndex, RenderType::D3D9);
-		drawSeletionOption("D3D9 + ReShade", &renderIndex, RenderType::D3D9_X_RESHADE);
-		drawSeletionOption("D3D9 + GW2Hook", &renderIndex, RenderType::D3D9_X_GW2HOOK);
+		ImGui::Text("DX9:");
+		drawSeletionOption("stock", &renderIndex, RenderType::D3D9);
+		drawSeletionOption("ReShade", &renderIndex, RenderType::D3D9_X_RESHADE);
+		drawSeletionOption("GW2Hook", &renderIndex, RenderType::D3D9_X_GW2HOOK);
 		drawSeletionOption("d912pxy", &renderIndex, RenderType::D912PXY);
 		drawSeletionOption("d912pxy + ReShade", &renderIndex, RenderType::D912PXY_X_RESHADE);
 		drawSeletionOption("d912pxy + Gw2Enhanced", &renderIndex, RenderType::D912PXY_X_GW2ENHANCED);
@@ -99,16 +121,19 @@ void Gui::draw()
 		drawSeletionOption("DXVK + ReShade", &renderIndex, RenderType::DXVK_X_RESHADE);
 		drawSeletionOption("DXVK (async)", &renderIndex, RenderType::DXVK_ASYNC);
 		drawSeletionOption("DXVK (async) + ReShade", &renderIndex, RenderType::DXVK_ASYNC_X_RESHADE);
-		drawSeletionOption("DXVK (for D3D11)", &renderIndex, RenderType::DXVK11);
-		drawSeletionOption("DXVK + ReShade (for D3D11)", &renderIndex, RenderType::DXVK11_X_RESHADE);
-		drawSeletionOption("DXVK (async, for D3D11)", &renderIndex, RenderType::DXVK11_ASYNC);
-		drawSeletionOption("DXVK + ReShade (async, for D3D11)", &renderIndex, RenderType::DXVK11_ASYNC_X_RESHADE);
-		drawSeletionOption("D3D11", &renderIndex, RenderType::D3D11);
-		drawSeletionOption("D3D11 + ReShade", &renderIndex, RenderType::D3D11_X_RESHADE);
+		ImGui::NewLine();
+		ImGui::Text("DX11:");
+		drawSeletionOption("DXVK", &activeRenderIndexDX11, RenderType::DXVK11);
+		drawSeletionOption("DXVK + ReShade", &activeRenderIndexDX11, RenderType::DXVK11_X_RESHADE);
+		drawSeletionOption("DXVK (async)", &renderIndexDX11, RenderType::DXVK11_ASYNC);
+		drawSeletionOption("DXVK + ReShade (async)", &renderIndexDX11, RenderType::DXVK11_ASYNC_X_RESHADE);
+		drawSeletionOption("stock", &renderIndexDX11, RenderType::D3D11);
+		drawSeletionOption("ReShade", &renderIndexDX11, RenderType::D3D11_X_RESHADE);
 		ImGui::NewLine();
 		if (ImGui::Button("Apply"))
 		{
-			showRestartNotify = gAddon().main.setRenderer((RenderType)renderIndex);
+			showRestartNotify = gAddon().main.setRenderer((RenderType)renderIndex, false);
+			showRestartNotify &= gAddon().main.setRenderer((RenderType)renderIndexDX11, true);
 			showErrorSaveNotify = !showRestartNotify;
 		}
 

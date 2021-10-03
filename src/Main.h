@@ -28,8 +28,8 @@ class Main
 	int lastUpd = 0;
 	bool needAutoHide = true;
 	bool extraDllsLoaded = true;
-	bool usingDX11base = false;
 	RenderType activeRenderer = RenderType::D3D9;
+	RenderType activeRendererDX11 = RenderType::D3D11;
 
 	wchar_t sysD3D9[4096];
 	wchar_t sysD3D11[4096];
@@ -43,8 +43,9 @@ public:
 	void stopAutoHide() { needAutoHide = false; hideTimeout = 0; }
 	void init();
 	void update();
-	bool setRenderer(RenderType v);
+	bool setRenderer(RenderType v, bool dx11_mode);
 	RenderType getActiveRenderer() { return activeRenderer;  }
+	RenderType getActiveDX11Renderer() { return activeRendererDX11; }
 	void deinit() { }
 
 	bool isExtraDllsLoaded() { return extraDllsLoaded; }

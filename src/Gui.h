@@ -5,11 +5,15 @@ class Gui
 {
 	bool showUI = true;
 	int renderIndex = (int)RenderType::D3D9;
+	int renderIndexDX11 = (int)RenderType::D3D9;
 	int activeRenderIndex = (int)RenderType::D3D9;
+	int activeRenderIndexDX11 = (int)RenderType::D3D9;
 	int* hideTimeout = nullptr;
 	bool showList = false;
 	bool showRestartNotify = false;
 	bool showErrorSaveNotify = false;
+
+	void drawActiveSelection();
 
 public:
 	void toggleUI(bool v) { showUI = v; }
