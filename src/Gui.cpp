@@ -123,8 +123,8 @@ void Gui::draw()
 		drawSeletionOption("DXVK (async) + ReShade", &renderIndex, RenderType::DXVK_ASYNC_X_RESHADE);
 		ImGui::NewLine();
 		ImGui::Text("DX11:");
-		drawSeletionOption("DXVK", &activeRenderIndexDX11, RenderType::DXVK11);
-		drawSeletionOption("DXVK + ReShade", &activeRenderIndexDX11, RenderType::DXVK11_X_RESHADE);
+		drawSeletionOption("DXVK", &renderIndexDX11, RenderType::DXVK11);
+		drawSeletionOption("DXVK + ReShade", &renderIndexDX11, RenderType::DXVK11_X_RESHADE);
 		drawSeletionOption("DXVK (async)", &renderIndexDX11, RenderType::DXVK11_ASYNC);
 		drawSeletionOption("DXVK + ReShade (async)", &renderIndexDX11, RenderType::DXVK11_ASYNC_X_RESHADE);
 		drawSeletionOption("stock", &renderIndexDX11, RenderType::D3D11);
