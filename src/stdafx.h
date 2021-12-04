@@ -6,6 +6,7 @@
 #include <windows.h>
 #include <gw2al_api.h>
 #include <gw2al_lib_imgui.h>
+#include <stdio.h>
 
 #include "Main.h"
 #include "Gui.h"

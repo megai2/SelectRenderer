@@ -169,8 +169,10 @@ void Gui::deinit()
 
 void Gui::drawSeletionOption(const char* txt, int* v, RenderType v_button)
 {
+	char buf[256];
+	sprintf_s(buf, "%s##radio_selector_%u", txt, v_button);
 	if (gAddon().main.checkAvailability(v_button))
-		ImGui::RadioButton(txt, v, (int)v_button);
+		ImGui::RadioButton(buf, v, (int)v_button);
 	else
 		ImGui::Text("   %s (N/A)", txt);
 }
